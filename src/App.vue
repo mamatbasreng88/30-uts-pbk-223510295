@@ -1,82 +1,59 @@
 <template>
-  <div id="app">
-    <!-- Header -->
-    <header>
-      <nav>
-        <ul>
-          <li :class="{ active: activeMenu === 'rental' }" @click="activeMenu = 'rental'">Rental</li>
-          <li :class="{ active: activeMenu === 'posts' }" @click="activeMenu = 'posts'">Posts</li>
-        </ul>
-      </nav>
-    </header>
+  <q-layout view="lHh lpR fFf">
+    <!-- Sidebar -->
+    <q-drawer show-if-above v-model="drawer" side="left" bordered>
+      <q-list dense>
+        <q-item clickable v-ripple to="/" exact>
+          <q-item-section>
+            <q-item-label>Rental</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-ripple to="/posts">
+          <q-item-section>
+            <q-item-label>Posts</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-ripple to="/albums">
+          <q-item-section>
+            <q-item-label>Albums</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
 
-    <!-- Main Content -->
-    <main>
-      <div v-if="activeMenu === 'rental'">
-        <!-- Fitur Rental Mobil -->
-        <h1>Selamat Datang Di Aplikasi Rental Mobil</h1>
-        <div class="depan">
-          <TodoList 
-            :todos="todos" 
-            @add-todo="addTodo" 
-            @remove-todo="removeTodo" 
-            @remove-all-todos="removeAllTodos"
-          />
-        </div>
-      </div>
-      
-      <div v-else-if="activeMenu === 'posts'">
-        <!-- Fitur Postingan -->
-        <Posts :users="users" :posts="posts" />
-      </div>
-    </main>
-    
-    <div class="footer">
-      <footer>
-        <p>&copy; Chikal Verguson 223510295</p>
-      </footer>
-    </div>
-  </div>
+    <q-page-container>
+      <!-- Header -->
+      <q-header>
+        <q-toolbar>
+          <q-btn flat round dense icon="menu" @click="drawer = !drawer" class="q-mr-sm" />
+          <q-toolbar-title class="text-center">RENTAL MOBIL CHIKAL</q-toolbar-title>
+          <q-space />
+        </q-toolbar>
+      </q-header>
+
+      <!-- Main Content -->
+      <router-view />
+    </q-page-container>
+
+    <!-- Footer -->
+    <q-footer class="footer">
+      <q-toolbar>
+        <q-toolbar-title>&copy; Chikal Verguson 223510295</q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
+  </q-layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import TodoList from './components/TodoList.vue';
-import Posts from './components/Posts.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-// Reactive state
-const activeMenu = ref('rental');
-const todos = ref([]);
-const users = ref([]);
-const posts = ref([]);
+const router = useRouter();
+const drawer = ref(false);
 
-// Methods
-const addTodo = (todo) => {
-  todos.value.push(todo);
+const navigateTo = (path) => {
+  router.push(path);
 };
-
-const removeTodo = (index) => {
-  todos.value.splice(index, 1);
-};
-
-const removeAllTodos = () => {
-  todos.value = [];
-};
-
-// Fetch data on mounted
-onMounted(() => {
-  fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response => response.json())
-    .then(data => {
-      users.value = data;
-    });
-
-  fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(data => {
-      posts.value = data;
-    });
-});
 </script>
 
 <style scoped>
@@ -88,72 +65,21 @@ body {
   background-position: center;
 }
 
-h1 {
-  color: black;
-  background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLascdafiwscuRNE3D5_pqzZqHj83iMAlDRA&s);
-  border-radius: 50px;
-  font-size: 70px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.depan {
-  border-radius: 30px;
-}
-
-/* Header styles */
-header {
-  background-color: #333;
-  padding: 10px 0;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 1000;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-}
-
-nav ul li {
-  margin: 0 15px;
-}
-
-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  transition: color 0.3s ease;
-}
-
-nav ul li a:hover,
-nav ul li.active a {
-  color: #ecd60c;
-}
-
-nav ul li.active {
-  border-bottom: 2px solid #ecd60c;
-}
-
-header nav ul li {
-  cursor: pointer;
-}
-
-header nav ul li:hover {
-  border-bottom: 2px solid #ecd60c;
-}
-
 .footer {
   color: #0c0000;
   text-align: center;
   padding: 20px 0;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   background: rgba(255, 255, 255, 0.8);
+}
+
+/* Override Quasar styles for specific elements */
+.q-list-item.active {
+  background-color: #ececec !important;
+}
+/* Center align toolbar title */
+.text-center {
+  flex: 1;
+  text-align: center;
 }
 </style>
